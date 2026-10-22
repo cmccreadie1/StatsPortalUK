@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>StatsPortal UK - National Metrics Engine</title>
+    <style>
+        :root {
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #cbd5e1;
+            --primary-accent: #020617;
+            --chart-bg: #f1f5f9;
+            --green-positive: #059669;
+            --red-negative: #dc2626;
+            --font-serif: "Georgia", "Times New Roman", serif;
+            --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            line-height: 1.4;
+            padding: 12px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .app-wrapper {
+            width: 100%;
+            max-width: 440px; /* Smartphone optimized width */
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            padding-bottom: 40px;
+        }
+
+        /* Header Bar */
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--primary-accent);
+        }
+
+        .brand-title h1 {
+            font-family: var(--font-serif);
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: var(--primary-accent);
+            line-height: 1.1;
+        }
+
+        .brand-title p {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .sync-btn {
+            background-color: var(--primary-accent);
+            color: #ffffff;
+            border: none;
+            padding: 8px 14px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            border-radius: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: transform 0.2s ease;
+        }
+
+        .sync-btn:active {
+            transform: scale(0.95);
+        }
+
+        .sync-btn svg {
+            width: 12px;
+            height: 12px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2.5;
+        }
+
+        /* Accordion Container */
+        .category-accordion {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .category-btn {
+            background-color: var(--card-bg);
+            color: var(--primary-accent);
+            border: 1px solid var(--border-color);
+            padding: 14px 16px;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            text-align: left;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+            transition: background-color 0.2s ease;
+        }
+
+        .category-btn:active {
+            background-color: #f1f5f9;
+        }
+
+        .category-btn .arrow {
+            font-size: 0.75rem;
+            transition: transform 0.3s ease;
+        }
+
+        .category-btn.active .arrow {
+            transform: rotate(180deg);
+        }
+
+        .category-panel {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.35s ease-out;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        /* Daily Mail Replicated Card */
+        .metric-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .card-header h3 {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: var(--primary-accent);
+        }
+
+        .info-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 17px;
+            height: 17px;
+            border-radius: 50%;
+            border: 1.5px solid var(--text-muted);
+            color: var(--text-muted);
+            font-size: 0.65rem;
+            font-family: var(--font-serif);
+            font-style: italic;
+            font-weight: bold;
+        }
+
+        .values-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .value-box {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .value-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 2px;
+        }
+
+        .value-number {
+            font-size: 1.35rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: #000000;
+        }
+
+        .value-number.positive { color: var(--green-positive); }
+        .value-number.negative { color: var(--red-negative); }
+
+        /* Chart Styling with Ticks */
+        .chart-box {
+            background-color: var(--chart-bg);
+            border-radius: 6px;
+            padding: 10px;
+            position: relative;
+            height: 95px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .y-axis {
+            position: absolute;
+            left: 8px;
+            top: 8px;
+            bottom: 22px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            font-size: 0.62rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            z-index: 2;
+        }
+
+        .chart-svg-wrapper {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            padding: 8px 10px 22px 42px;
+        }
+
+        .sparkline-svg {
+            width: 100%;
+            height: 100%;
+            overflow: visible;
+        }
+
+        .sparkline-black {
+            fill: none;
+            stroke: #000000;
+            stroke-width: 2.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .sparkline-tip {
+            fill: none;
+            stroke-width: 2.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .sparkline-tip.positive { stroke: var(--green-positive); }
+        .sparkline-tip.negative { stroke: var(--red-negative); }
+
+        .x-axis {
+            position: absolute;
+            bottom: 4px;
+            left: 42px;
+            right: 10px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.62rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .card-footer {
+            border-top: 1px dashed var(--border-color);
+            padding-top: 6px;
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-wrapper">
+        <header class="app-header">
+            <div class="brand-title">
+                <h1>StatsPortal UK</h1>
+                <p id="session-time">National Data Directory</p>
+            </div>
+            <button class="sync-btn" onclick="syncData()">
+                <svg viewBox="0 0 24 24">
+                    <path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"></path>
+                </svg>
+                Sync
+            </button>
+        </header>
+
+        <div class="category-accordion">
+
+            <!-- 1. Economy & Markets -->
+            <button class="category-btn" onclick="toggleAccordion(this)">
+                <span>📊 Economy & Markets</span>
+                <span class="arrow">▼</span>
+            </button>
+            <div class="category-panel">
+                <div class="metric-card">
+                    <div class="card-header"><h3>CPI Inflation Rate</h3><span class="info-icon">i</span></div>
+                    <div class="values-grid">
+                        <div class="value-box"><span class="value-label">Latest</span><span class="value-number">3.50%</span></div>
+                        <div class="value-box"><span class="value-label">1-yr change</span><span class="value-number negative">+0.40%</span></div>
+                    </div>
+                    <div class="chart-box">
+                        <div class="y-axis"><span>10%</span><span>5%</span><span>0%</span></div>
+                        <div class="chart-svg-wrapper">
+                            <svg class="sparkline-svg" viewBox="0 0 100 30" preserveAspectRatio="none">
+                                <path class="sparkline-black" d="M 0,22 Q 25,2 50,5 T 75,20" />
+                                <path class="sparkline-tip negative" d="M 75,20 L 100,16" />
+                            </svg>
+                        </div>
+                        <div class="x-axis"><span>2021</span><span>2026</span></div>
+                    </div>
+                    <div class="card-footer"><span>Source: ONS (OGL)</span></div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="card-header"><h3>Bank of England Base Rate</h3><span class="info-icon">i</span></div>
+                    <div class="values-grid">
+                        <div class="value-box"><span class="value-label">Latest</span><span class="value-number">3.75%</span></div>
+                        <div class="value-box"><span class="value-label">1-yr change</span><span class="value-number positive">-0.50%</span></div>
+                    </div>
+                    <div class="chart-box">
+                        <div class="y-axis"><span>6%</span><span>3%</span><span>0%</span></div>
+                        <div class="chart-svg-wrapper">
+                            <svg class="sparkline-svg" viewBox="0 0 100 30" preserveAspectRatio="none">
+                                <path class="sparkline-black" d="M 0,28 Q 20,28 40,15 T 75,10" />
+                                <path class="sparkline-tip positive" d="M 75,10 L 100,16" />
+                            </svg>
+                        </div>
+                        <div class="x-axis"><span>2021</span><span>2026</span></div>
+                    </div>
+                    <div class="card-footer"><span>Source: Bank of England (OGL)</span></div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="card-header"><h3>Gold Price (per oz)</h3><span class="info-icon">i</span></div>
+                    <div class="values-grid">
+                        <div class="value-box"><span class="value-label">Latest</span><span class="value-number">£2,120</span></div>
+                        <div class="value-box"><span class="value-label">1-yr change</span><span class="value-number positive">+£180</span></div>
+                    </div>
+                    <div class="chart-box">
+                        <div class="y-axis"><span>£2.5k</span><span>£1.5k</span><span>£1k</span></div>
+                        <div class="chart-svg-wrapper">
+                            <svg class="sparkline-svg" viewBox="0 0 100 30" preserveAspectRatio="none">
+                                <path class="sparkline-black" d="M 0,25 Q 25,20 50,18 T 75,10" />
+                                <path class="sparkline-tip positive" d="M 75,10 L 100,4" />
+                            </svg>
+                        </div>
+                        <div class="x-axis"><span>2021</span><span>2026</span></div>
+                    </div>
+                    <div class="card-footer"><span>Source: Public Commodities Fact</span></div>
+                </div>
+            </div>
+
+            <!-- 2. Cost of Living -->
+            <button class="category-btn" onclick="toggleAccordion(this)">
+                <span>🛒 Cost of Living & Basket</span>
+                <span class="arrow">▼</span>
+            </button>
+            <div class="category-panel">
+                <div class="metric-card">
+                    <div class="card-header"><h3>Average Pint of Beer</h3><span class="info-icon">i</span></div>
+                    <div class="values-grid">
+                        <div class="value-box"><span class="value-label">Latest</span><span class="value-number">£4.80</span></div>
+                        <div class="value-box"><span class="value-label">1-yr change</span><span class="value-number negative">+£0.22</span></div>
+                    </div>
+                    <div class="chart-box">
+                        <div class="y-axis"><span>£6.00</span><span>£4.00</span><span>£2.00</span></div>
+                        <div class="chart-svg-wrapper">
+                            <svg class="sparkline-svg" viewBox="0 0 100 30" preserveAspectRatio="none">
+                                <path class="sparkline-black" d="M 0,26 Q 30,22 50,18 T 75,12" />
+                                <path class="sparkline-tip negative" d="M 75,12 L 100,6" />
+                            </svg>
+                        </div>
+                        <div class="x-axis"><span>2021</span><span>2026</span></div>
+                    </div>
+                    <div class="card-footer"><span>Source: ONS Basket Index (OGL)</span></div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="card-header"><h3>Weekly Family Grocery Shop</h3><span class="info-icon">i</span></div>
+                    <div class="values-grid">
+                        <div class="value-box"><span class="value-label">Latest</span><span class="value-number">£168</span></div>
+                        <div class="value-box"><span class="value-label">1-yr change</span><span class="value-number negative">+£4.50</span></div>
+                    </div>
+                    <div class="chart-box">
+                        <div class="y-axis"><span>£200</span><span>£150</span><span>£100</span></div>
+                        <div class="chart-svg-wrapper">
+                            <svg class="sparkline-svg" viewBox="0 0 100 30" preserveAspectRatio="none">
+                                <path class="sparkline-black" d="M 0,28 Q 25,24 50,16 T 75,10" />
+                                <path class="sparkline-tip negative" d="M 75,10 L 100,5" />
+                            </svg>
+                        </div>
+                        <div class="x-axis"><span>2021</span><span>2026</span></div>
+                    </div>
+                    <div class="card-footer"><span>Source: ONS Family Spending (OGL)</span></div>
+                </div>
+            </div>
+
+            <!-- 3. Immigration & Borders -->
+            <button class="category-btn" onclick="toggleAccordion(this)">
+                <span>🚢 Immigration & Borders</span>
+                <span class="arrow">▼</span>
+            </button>
+            <div class="category-panel">
+                <div class="metric-card">
+                    <div class="card-header"><h3>Net UK Migration</h3><span class="info-icon">i</span></div>
+                    <div class="values-grid">
+                        <div class="value-box"><span class="value-label">Latest</span><span class="value-number">685,000</span></div>
+                        <div class="value-box"><span class="value-label">1-yr change</span><span class="value-number positive">-52,000</span></div>
+                    </div>
+                    <div class="chart-box">
+                        <div class="y-axis"><span>1m</span><span>500k</span><span>0</span></div>
+                        <div class="chart-svg-wrapper">
+                            <svg class="sparkline-svg" viewBox="0 0 100 30" preserveAspectRatio="none">
+                                <path class="sparkline-black" d="M 0,28 Q 20,5 50,2 T 75,15" />
+                                <path class="sparkline-tip positive" d="M 75,15 L 100,22" />
+                            </svg>
+                        </div>
+                        <div class="x-axis"><span>2021</span><span>2026</span></div>
+                    </div>
+                    <div class="card-footer"><span>Source: ONS (OGL)</span></div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="card-header"><h3>Small Boat Arrivals</h3><span class="info-icon">i</span></div>
+                    <div class="values-grid">
+                        <div class="value-box"><span class="value-label">Latest</span><span class="value-number">29,400</span></div>
+                        <div class="value-box"><span class="value-label">1-yr change</span><span class="value-number negative">+1,200</span></div>
+                    </div>
+                    <div class="chart-box">
+                        <div class="y-axis"><span>60k</span><span>30k</span><span>0</span></div>
+                        <div class="chart-svg-wrapper">
+                            <svg class="sparkline-svg" viewBox="0 0 100 30" preserveAspectRatio="none">
+                                <path class="sparkline-black" d="M 0,26 Q 25,18 50,5 T 75,12" />
+                                <path class="sparkline-tip negative" d="M 75,12 L 100,8" />
+                            </svg>
+                        </div>
+                        <div class="x-axis"><span>2021</span><span>2026</span></div>
+                    </div>
+                    <div class="card-footer"><span>Source: Home Office (OGL)</span></div>
+                </div>
+            </div>
+
+            <!-- 4. Travel & Tourism -->
+            <button class="category-btn" onclick="toggleAccordion(this)">
+                <span>✈️ Travel & Tourism</span>
+                <span class="arrow">▼</span>
+            </button>
+            <div class="category-panel">
+                <div class="metric-card">
+                    <div class="card-header"><h3>Top Foreign Destination (Visits)</h3><span class="info-icon">i</span></div>
+                    <div class="values-grid">
+                        <div class="value-box"><span class="value-label">Latest (Spain)</span><span class="value-number">17.2M</span></div>
+                        <div class="value-box"><span class="value-label">1-yr change</span><span class="value-number positive">+420,000</span></div>
+                    </div>
+                    <div class="chart-box">
+                        <div class="y-axis"><span>20M</span><span>10M</span><span>0</span></div>
+                        <div class="chart-svg-wrapper">
+                            <svg class="sparkline-svg" viewBox="0 0 100 30" preserveAspectRatio="none">
+                                <path class="sparkline-black" d="M 0,28 Q 25,22 50,15 T 75,10" />
+                                <path class="sparkline-tip positive" d="M 75,10 L 100,5" />
+                            </svg>
+                        </div>
+                        <div class="x-axis"><span>2021</span><span>2026</span></div>
+                    </div>
+                    <div class="card-footer"><span>Source: ONS Travel Trends (OGL)</span></div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="card-header"><h3>Top UK Free Attraction Visits</h3><span class="info-icon">i</span></div>
+                    <div class="values-grid">
+                        <div class="value-box"><span class="value-label">British Museum</span><span class="value-number">5.8M</span></div>
+                        <div class="value-box"><span class="value-label">1-yr change</span><span class="value-number positive">+310,000</span></div>
+                    </div>
+                    <div class="chart-box">
+                        <div class="y-axis"><span>8M</span><span>4M</span><span>0</span></div>
+                        <div class="chart-svg-wrapper">
+                            <svg class="sparkline-svg" viewBox="0 0 100 30" preserveAspectRatio="none">
+                                <path class="sparkline-black" d="M 0,25 Q 30,20 50,14 T 75,10" />
+                                <path class="sparkline-tip positive" d="M 75,10 L 100,6" />
+                            </svg>
+                        </div>
+                        <div class="x-axis"><span>2021</span><span>2026</span></div>
+                    </div>
+                    <div class="card-footer"><span>Source: ALVA / VisitBritain (OGL)</span></div>
+                </div>
+            </div>
+
+            <!-- 5. Housing -->
+            <button class="category-btn" onclick="toggleAccordion(this)">
+                <span>🏠 Housing & Mortgages</span>
+                <span class="arrow">▼</span>
+            </button>
+            <div class="category-panel">
+                <div class="metric-card">
+                    <div class="card-header"><h3>Average UK House Price</h3><span class="info-icon">i</span></div>
+                    <div class="values-grid">
+                        <div class="value-box"><span class="value-label">Latest</span><span class="value-number">£293,000</span></div>
+                        <div class="value-box"><span class="value-label">1-yr change</span><span class="value-number positive">+£3,000</span></div>
+                    </div>
+                    <div class="chart-box">
+                        <div class="y-axis"><span>£300k</span><span>£150k</span><span>0</span></div>
+                        <div class="chart-svg-wrapper">
+                            <svg class="sparkline-svg" viewBox="0 0 100 30" preserveAspectRatio="none">
+                                <path class="sparkline-black" d="M 0,25 Q 30,20 50,15 T 75,12" />
+                                <path class="sparkline-tip positive" d="M 75,12 L 100,8" />
+                            </svg>
+                        </div>
+                        <div class="x-axis"><span>2021</span><span>2026</span></div>
+                    </div>
+                    <div class="card-footer"><span>Source: HM Land Registry (OGL)</span></div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="card-header"><h3>Average Monthly Rent</h3><span class="info-icon">i</span></div>
+                    <div class="values-grid">
+                        <div class="value-box"><span class="value-label">Latest</span><span class="value-number">£1,459</span></div>
+                        <div class="value-box"><span class="value-label">1-yr change</span><span class="value-number negative">+£56</span></div>
+                    </div>
+                    <div class="chart-box">
+                        <div class="y-axis"><span>£1.8k</span><span>£1k</span><span>0</span></div>
+                        <div class="chart-svg-wrapper">
+                            <svg class="sparkline-svg" viewBox="0 0 100 30" preserveAspectRatio="none">
+                                <path class="sparkline-black" d="M 0,28 Q 30,22 50,18 T 75,10" />
+                                <path class="sparkline-tip negative" d="M 75,10 L 100,4" />
+                            </svg>
+                        </div>
+                        <div class="x-axis"><span>2021</span><span>2026</span></div>
+                    </div>
+                    <div class="card-footer"><span>Source: ONS Rental Index (OGL)</span></div>
+                </div>
+            </div>
+
+            <!-- 6. Health & NHS -->
+            <button class="category-btn" onclick="toggleAccordion(this)">
+                <span>🏥 Health & NHS</span>
+                <span class="arrow">▼</span>
+            </button>
+            <div class="category-panel">
+                <div class="metric-card">
+                    <div class="card-header"><h3>NHS Waiting List (England)</h3><span class="info-icon">i</span></div>
+                    <div class="values-grid">
+                        <div class="value-box"><span class="value-label">Latest</span><span class="value-number">7.33M</span></div>
+                        <div class="value-box"><span class="value-label">1-yr change</span><span class="value-number positive">-30,000</span></div>
+                    </div>
+                    <div class="chart-box">
+                        <div class="y-axis"><span>8M</span><span>4M</span><span>0</span></div>
+                        <div class="chart-svg-wrapper">
+                            <svg class="sparkline-svg" viewBox="0 0 100 30" preserveAspectRatio="none">
+                                <path class="sparkline-black" d="M 0,5 Q 30,2 50,8 T 75,18" />
+                                <path class="sparkline-tip positive" d="M 75,18 L 100,22" />
+                            </svg>
+                        </div>
+                        <div class="x-axis"><span>2021</span><span>2026</span></div>
+                    </div>
+                    <div class="card-footer"><span>Source: NHS England (OGL)</span></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        function toggleAccordion(btn) {
+            btn.classList.toggle('active');
+            const panel = btn.nextElementSibling;
+            if (panel.style.maxHeight) {
+                panel.style.maxHeight = null;
+            } else {
+                panel.style.maxHeight = panel.scrollHeight + "px";
+            }
+        }
+
+        function syncData() {
+            const now = new Date();
+            document.getElementById('session-time').textContent = `Updated: ${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+        }
+    </script>
+</body>
+</html>
