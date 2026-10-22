@@ -6,20 +6,28 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>StatsPortal UK - Broadsheet Edition</title>
+    <title>StatsPortal UK - Modern Edition</title>
     <style>
         :root {
-            --paper-bg: #f4f1ea;
-            --paper-card: #ffffff;
-            --text-main: #111111;
-            --text-muted: #555555;
-            --border-primary: #111111;
-            --border-subtle: #d6d0c4;
-            --accent-red: #b91c1c;
-            --accent-green: #047857;
-            --font-serif: "Georgia", "Times New Roman", Times, serif;
+            --bg-canvas: #ffffff;
+            --bg-surface: #f8fafc;
+            --bg-card: #ffffff;
+            --border-color: #f1f5f9;
+            --border-hover: #e2e8f0;
+            --text-primary: #0f172a;
+            --text-secondary: #64748b;
+            --accent-color: #2563eb;
+            --green-positive: #059669;
+            --green-bg: #ecfdf5;
+            --red-negative: #dc2626;
+            --red-bg: #fef2f2;
+            --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -2px rgba(0, 0, 0, 0.02);
+            --shadow-md: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+            --radius-card: 20px;
+            --radius-tile: 18px;
             --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            --font-mono: "Courier New", Courier, monospace;
+            --font-mono: "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
         }
 
         * {
@@ -29,9 +37,9 @@
         }
 
         body {
-            background-color: var(--paper-bg);
-            color: var(--text-main);
-            font-family: var(--font-serif);
+            background-color: var(--bg-canvas);
+            color: var(--text-primary);
+            font-family: var(--font-sans);
             line-height: 1.5;
             padding: 16px;
             display: flex;
@@ -43,132 +51,204 @@
             max-width: 480px;
             display: flex;
             flex-direction: column;
-            gap: 20px;
-            padding-bottom: 40px;
+            gap: 24px;
+            padding-bottom: 48px;
+            animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
-        /* Broadsheet Masthead Header */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Modern Floating Header */
         .app-header {
-            background-color: var(--paper-card);
-            border-top: 3px solid var(--border-primary);
-            border-bottom: 3px solid var(--border-primary);
-            padding: 16px;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border-hover);
+            border-radius: var(--radius-card);
+            padding: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 12px;
+            z-index: 50;
         }
 
         .brand-info h1 {
-            font-family: var(--font-serif);
-            font-size: 1.6rem;
-            font-weight: 700;
-            letter-spacing: -0.01em;
-            color: var(--text-main);
-            text-transform: uppercase;
+            font-size: 1.35rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            color: var(--text-primary);
         }
 
         .brand-info h1 span {
-            font-weight: 400;
-            font-style: italic;
+            color: var(--accent-color);
         }
 
         .brand-info p {
-            font-size: 0.68rem;
-            color: var(--text-muted);
-            font-family: var(--font-sans);
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            font-family: var(--font-mono);
+            letter-spacing: 0.02em;
             margin-top: 2px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Pulsing Live Dot */
+        .live-dot {
+            width: 6px;
+            height: 6px;
+            background-color: var(--green-positive);
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 0 rgba(5, 150, 105, 0.4);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(5, 150, 105, 0.4); }
+            70% { box-shadow: 0 0 0 6px rgba(5, 150, 105, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(5, 150, 105, 0); }
         }
 
         .sync-btn {
-            background-color: transparent;
-            color: var(--text-main);
-            border: 1px solid var(--border-primary);
-            padding: 6px 10px;
-            font-size: 0.7rem;
-            font-family: var(--font-sans);
+            background-color: var(--bg-surface);
+            color: var(--text-primary);
+            border: 1px solid var(--border-hover);
+            padding: 10px 14px;
+            font-size: 0.75rem;
             font-weight: 700;
-            text-transform: uppercase;
+            border-radius: 12px;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 4px;
-            transition: background 0.2s ease;
+            gap: 6px;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .sync-btn:hover {
+            background-color: var(--text-primary);
+            color: #ffffff;
+            border-color: var(--text-primary);
+            transform: translateY(-1px);
         }
 
         .sync-btn:active {
-            background-color: var(--border-primary);
-            color: #ffffff;
+            transform: scale(0.96);
         }
 
         .sync-btn svg {
-            width: 11px;
-            height: 11px;
+            width: 13px;
+            height: 13px;
             fill: none;
             stroke: currentColor;
             stroke-width: 2.5;
+            transition: transform 0.5s ease;
         }
 
-        /* Category Grid Launcher */
+        .sync-btn.spinning svg {
+            transform: rotate(360deg);
+        }
+
+        /* Modern Category Grid */
         .category-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 10px;
+            gap: 14px;
         }
 
         .category-tile {
-            background-color: var(--paper-card);
-            border: 1px solid var(--border-primary);
-            padding: 14px 12px;
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-tile);
+            padding: 20px 16px;
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 10px;
             cursor: pointer;
             text-align: left;
-            box-shadow: 2px 2px 0px rgba(17,17,17,0.1);
-            transition: transform 0.1s ease;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: var(--shadow-sm);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .category-tile::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.03) 0%, rgba(255,255,255,0) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .category-tile:hover {
+            transform: translateY(-3px);
+            border-color: var(--border-hover);
+            box-shadow: var(--shadow-md);
+        }
+
+        .category-tile:hover::before {
+            opacity: 1;
         }
 
         .category-tile:active {
-            transform: translate(1px, 1px);
-            box-shadow: 1px 1px 0px rgba(17,17,17,0.1);
+            transform: scale(0.97);
         }
 
         .tile-icon {
-            font-size: 1.3rem;
+            font-size: 1.6rem;
+            background: #ffffff;
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+            border: 1px solid var(--border-color);
         }
 
         .tile-title {
-            font-family: var(--font-sans);
-            font-size: 0.82rem;
+            font-size: 0.9rem;
             font-weight: 700;
-            color: var(--text-main);
-            text-transform: uppercase;
+            color: var(--text-primary);
+            letter-spacing: -0.01em;
         }
 
         .tile-count {
-            font-size: 0.65rem;
-            color: var(--text-muted);
+            font-size: 0.7rem;
+            color: var(--text-secondary);
             font-family: var(--font-mono);
         }
 
-        /* Broadsheet Popup Modal Window */
+        /* Modern Fluid Modal Window */
         .modal-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            background-color: rgba(17, 17, 17, 0.75);
-            backdrop-filter: blur(4px);
+            background-color: rgba(15, 23, 42, 0.4);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             z-index: 1000;
             display: flex;
             justify-content: center;
             align-items: flex-end;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.3s ease;
+            transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .modal-overlay.active {
@@ -178,17 +258,16 @@
 
         .modal-container {
             width: 100%;
-            max-width: 500px;
-            height: 90vh;
-            background-color: var(--paper-bg);
-            border-top: 3px solid var(--border-primary);
-            border-radius: 12px 12px 0 0;
+            max-width: 520px;
+            height: 88vh;
+            background-color: #ffffff;
+            border-radius: 28px 28px 0 0;
             display: flex;
             flex-direction: column;
             transform: translateY(100%);
-            transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
             overflow: hidden;
-            box-shadow: 0 -10px 25px rgba(0,0,0,0.3);
+            box-shadow: var(--shadow-lg);
         }
 
         .modal-overlay.active .modal-container {
@@ -196,125 +275,142 @@
         }
 
         .modal-header {
-            padding: 14px 18px;
-            background-color: var(--paper-card);
-            border-bottom: 2px solid var(--border-primary);
+            padding: 20px 24px;
+            background-color: #ffffff;
+            border-bottom: 1px solid var(--border-color);
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
         .modal-title {
-            font-family: var(--font-serif);
             font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--text-main);
-            text-transform: uppercase;
+            font-weight: 800;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
         }
 
         .close-btn {
-            background-color: transparent;
-            color: var(--text-main);
-            border: 1px solid var(--border-primary);
-            width: 28px;
-            height: 28px;
-            font-size: 1.1rem;
-            font-weight: bold;
+            background-color: var(--bg-surface);
+            color: var(--text-primary);
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            font-size: 1.2rem;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .close-btn:hover {
+            background-color: var(--text-primary);
+            color: #ffffff;
+            transform: scale(1.05);
         }
 
         .close-btn:active {
-            background-color: var(--border-primary);
-            color: #ffffff;
+            transform: scale(0.95);
         }
 
         .modal-body {
-            padding: 16px;
+            padding: 20px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
             gap: 16px;
+            background-color: var(--bg-surface);
         }
 
-        /* Broadsheet Metric Card Styling */
+        /* Modern Sleek Metric Card */
         .metric-card {
-            background-color: var(--paper-card);
-            border: 1px solid var(--border-primary);
-            padding: 16px;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-card);
+            padding: 20px;
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            box-shadow: 2px 2px 0px rgba(17,17,17,0.08);
+            gap: 16px;
+            box-shadow: var(--shadow-sm);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .metric-card:hover {
+            box-shadow: var(--shadow-md);
         }
 
         .card-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            border-bottom: 1px solid var(--border-subtle);
-            padding-bottom: 6px;
         }
 
         .card-header h3 {
-            font-family: var(--font-serif);
-            font-size: 1.05rem;
+            font-size: 0.95rem;
             font-weight: 700;
-            color: var(--text-main);
+            color: var(--text-primary);
+            letter-spacing: -0.01em;
         }
 
         .info-badge {
-            font-size: 0.6rem;
-            font-family: var(--font-sans);
-            font-weight: 700;
-            color: var(--text-muted);
-            border: 1px solid var(--border-subtle);
-            padding: 2px 5px;
-            text-transform: uppercase;
+            font-size: 0.65rem;
+            font-family: var(--font-mono);
+            font-weight: 600;
+            color: var(--text-secondary);
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            padding: 4px 8px;
+            border-radius: 8px;
         }
 
         .values-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 12px;
+            gap: 16px;
         }
 
         .value-box {
             display: flex;
             flex-direction: column;
+            gap: 2px;
         }
 
         .value-label {
-            font-size: 0.68rem;
-            color: var(--text-muted);
-            font-family: var(--font-sans);
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.05em;
         }
 
         .value-number {
-            font-size: 1.35rem;
-            font-weight: 700;
+            font-size: 1.5rem;
+            font-weight: 800;
             font-family: var(--font-mono);
-            color: var(--text-main);
-            letter-spacing: -0.02em;
+            color: var(--text-primary);
+            letter-spacing: -0.03em;
         }
 
-        .value-number.positive { color: var(--accent-green); }
-        .value-number.negative { color: var(--accent-red); }
+        .value-number.positive { 
+            color: var(--green-positive); 
+        }
+        .value-number.negative { 
+            color: var(--red-negative); 
+        }
 
-        /* Chart Newsprint Container */
+        /* Modern Clean Chart Box */
         .chart-box {
-            background-color: #fbf9f5;
-            border: 1px solid var(--border-subtle);
-            padding: 10px;
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 12px;
             position: relative;
-            height: 95px;
+            height: 110px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -322,14 +418,14 @@
 
         .y-axis {
             position: absolute;
-            left: 6px;
-            top: 8px;
-            bottom: 22px;
+            left: 10px;
+            top: 10px;
+            bottom: 24px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            font-size: 0.55rem;
-            color: var(--text-muted);
+            font-size: 0.6rem;
+            color: var(--text-secondary);
             font-family: var(--font-mono);
             z-index: 2;
         }
@@ -340,7 +436,7 @@
             position: absolute;
             top: 0;
             left: 0;
-            padding: 8px 10px 22px 38px;
+            padding: 10px 12px 24px 44px;
         }
 
         .sparkline-svg {
@@ -351,56 +447,57 @@
 
         .sparkline-main {
             fill: none;
-            stroke: var(--text-main);
-            stroke-width: 2;
+            stroke: var(--text-secondary);
+            stroke-width: 2.5;
             stroke-linecap: round;
             stroke-linejoin: round;
+            opacity: 0.4;
         }
 
         .sparkline-tip {
             fill: none;
-            stroke-width: 2.2;
+            stroke-width: 2.5;
             stroke-linecap: round;
             stroke-linejoin: round;
+            transition: d 0.5s ease-in-out;
         }
 
-        .sparkline-tip.positive { stroke: var(--accent-green); }
-        .sparkline-tip.negative { stroke: var(--accent-red); }
+        .sparkline-tip.positive { stroke: var(--green-positive); }
+        .sparkline-tip.negative { stroke: var(--red-negative); }
 
         .x-axis {
             position: absolute;
-            bottom: 4px;
-            left: 38px;
-            right: 10px;
+            bottom: 6px;
+            left: 44px;
+            right: 12px;
             display: flex;
             justify-content: space-between;
-            font-size: 0.55rem;
-            color: var(--text-muted);
+            font-size: 0.6rem;
+            color: var(--text-secondary);
             font-family: var(--font-mono);
         }
 
         .card-footer {
-            border-top: 1px dashed var(--border-subtle);
-            padding-top: 6px;
-            font-size: 0.62rem;
-            color: var(--text-muted);
+            border-top: 1px solid var(--border-color);
+            padding-top: 10px;
+            font-size: 0.7rem;
+            color: var(--text-secondary);
             display: flex;
             justify-content: space-between;
-            font-family: var(--font-sans);
-            text-transform: uppercase;
+            font-family: var(--font-mono);
         }
     </style>
 </head>
 <body>
 
     <div class="app-wrapper">
-        <!-- Broadsheet Masthead Header -->
+        <!-- Floating Modern Header -->
         <header class="app-header">
             <div class="brand-info">
                 <h1>StatsPortal <span>UK</span></h1>
-                <p id="terminal-status">National Intelligence Edition</p>
+                <p><span class="live-dot"></span><span id="terminal-status">LIVE TERMINAL</span></p>
             </div>
-            <button class="sync-btn" onclick="syncTerminal()">
+            <button class="sync-btn" id="sync-btn" onclick="syncTerminal()">
                 <svg viewBox="0 0 24 24">
                     <path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"></path>
                 </svg>
@@ -454,60 +551,60 @@
             </div>
             <div class="modal-body">
                 <div class="metric-card">
-                    <div class="card-header"><h3>CPI Inflation Rate</h3><span class="info-badge">ONS</span></div>
+                    <div class="card-header"><h3>CPI Inflation Rate</h3><span class="info-badge">ONS (OGL)</span></div>
                     <div class="values-grid">
-                        <div class="value-box"><span class="value-label">Latest</span><span class="value-number">3.50%</span></div>
+                        <div class="value-box"><span class="value-label">Latest</span><span class="value-number" id="val-cpi">3.50%</span></div>
                         <div class="value-box"><span class="value-label">1-yr change</span><span class="value-number negative">+0.40%</span></div>
                     </div>
                     <div class="chart-box">
                         <div class="y-axis"><span>10%</span><span>5%</span><span>0%</span></div>
                         <div class="chart-svg-wrapper">
                             <svg class="sparkline-svg" viewBox="0 0 100 30" preserveAspectRatio="none">
-                                <path class="sparkline-main" d="M 0,22 Q 25,2 50,5 T 75,20" />
-                                <path class="sparkline-tip negative" d="M 75,20 L 100,16" />
+                                <path class="sparkline-main" d="M 0,10 Q 25,25 50,15 T 100,5" />
+                                <path class="sparkline-tip negative" id="path-cpi" d="M 50,15 Q 75,18 100,20" />
                             </svg>
                         </div>
                         <div class="x-axis"><span>2021</span><span>2026</span></div>
                     </div>
-                    <div class="card-footer"><span>Frequency: Monthly</span><span>Source: ONS (OGL)</span></div>
+                    <div class="card-footer"><span>Frequency: Monthly</span><span>Source: ONS</span></div>
                 </div>
 
                 <div class="metric-card">
                     <div class="card-header"><h3>BoE Base Rate</h3><span class="info-badge">Bank of England</span></div>
                     <div class="values-grid">
-                        <div class="value-box"><span class="value-label">Latest</span><span class="value-number">3.75%</span></div>
+                        <div class="value-box"><span class="value-label">Latest</span><span class="value-number" id="val-rate">3.75%</span></div>
                         <div class="value-box"><span class="value-label">1-yr change</span><span class="value-number positive">-0.50%</span></div>
                     </div>
                     <div class="chart-box">
                         <div class="y-axis"><span>6%</span><span>3%</span><span>0%</span></div>
                         <div class="chart-svg-wrapper">
                             <svg class="sparkline-svg" viewBox="0 0 100 30" preserveAspectRatio="none">
-                                <path class="sparkline-main" d="M 0,28 Q 20,28 40,15 T 75,10" />
-                                <path class="sparkline-tip positive" d="M 75,10 L 100,16" />
+                                <path class="sparkline-main" d="M 0,25 Q 25,10 50,20 T 100,10" />
+                                <path class="sparkline-tip positive" id="path-rate" d="M 50,20 Q 75,15 100,12" />
                             </svg>
                         </div>
                         <div class="x-axis"><span>2021</span><span>2026</span></div>
                     </div>
-                    <div class="card-footer"><span>Frequency: Real-Time</span><span>Source: BoE (OGL)</span></div>
+                    <div class="card-footer"><span>Frequency: Real-Time</span><span>Source: BoE</span></div>
                 </div>
 
                 <div class="metric-card">
                     <div class="card-header"><h3>Gold Price (per oz)</h3><span class="info-badge">Commodities</span></div>
                     <div class="values-grid">
-                        <div class="value-box"><span class="value-label">Latest</span><span class="value-number">£2,120</span></div>
+                        <div class="value-box"><span class="value-label">Latest</span><span class="value-number" id="val-gold">£2,120</span></div>
                         <div class="value-box"><span class="value-label">1-yr change</span><span class="value-number positive">+£180</span></div>
                     </div>
                     <div class="chart-box">
                         <div class="y-axis"><span>£2.5k</span><span>£1.5k</span><span>£1k</span></div>
                         <div class="chart-svg-wrapper">
                             <svg class="sparkline-svg" viewBox="0 0 100 30" preserveAspectRatio="none">
-                                <path class="sparkline-main" d="M 0,25 Q 25,20 50,18 T 75,10" />
-                                <path class="sparkline-tip positive" d="M 75,10 L 100,4" />
+                                <path class="sparkline-main" d="M 0,28 Q 25,20 50,12 T 100,5" />
+                                <path class="sparkline-tip positive" id="path-gold" d="M 50,12 Q 75,8 100,4" />
                             </svg>
                         </div>
                         <div class="x-axis"><span>2021</span><span>2026</span></div>
                     </div>
-                    <div class="card-footer"><span>Frequency: Live Spot</span><span>Source: Public Market Data</span></div>
+                    <div class="card-footer"><span>Frequency: Spot Live</span><span>Source: Public Fact</span></div>
                 </div>
             </div>
         </div>
@@ -522,7 +619,7 @@
             </div>
             <div class="modal-body">
                 <div class="metric-card">
-                    <div class="card-header"><h3>Average Pint of Beer</h3><span class="info-badge">ONS</span></div>
+                    <div class="card-header"><h3>Average Pint of Beer</h3><span class="info-badge">ONS (OGL)</span></div>
                     <div class="values-grid">
                         <div class="value-box"><span class="value-label">Latest</span><span class="value-number">£4.80</span></div>
                         <div class="value-box"><span class="value-label">1-yr change</span><span class="value-number negative">+£0.22</span></div>
@@ -531,17 +628,17 @@
                         <div class="y-axis"><span>£6.00</span><span>£4.00</span><span>£2.00</span></div>
                         <div class="chart-svg-wrapper">
                             <svg class="sparkline-svg" viewBox="0 0 100 30" preserveAspectRatio="none">
-                                <path class="sparkline-main" d="M 0,26 Q 30,22 50,18 T 75,12" />
-                                <path class="sparkline-tip negative" d="M 75,12 L 100,6" />
+                                <path class="sparkline-main" d="M 0,25 Q 25,20 50,15 T 100,8" />
+                                <path class="sparkline-tip negative" d="M 50,15 Q 75,10 100,6" />
                             </svg>
                         </div>
                         <div class="x-axis"><span>2021</span><span>2026</span></div>
                     </div>
-                    <div class="card-footer"><span>Frequency: Monthly</span><span>Source: ONS Index (OGL)</span></div>
+                    <div class="card-footer"><span>Frequency: Monthly</span><span>Source: ONS Index</span></div>
                 </div>
 
                 <div class="metric-card">
-                    <div class="card-header"><h3>Weekly Grocery Shop</h3><span class="info-badge">ONS</span></div>
+                    <div class="card-header"><h3>Weekly Grocery Shop</h3><span class="info-badge">ONS (OGL)</span></div>
                     <div class="values-grid">
                         <div class="value-box"><span class="value-label">Latest</span><span class="value-number">£168</span></div>
                         <div class="value-box"><span class="value-label">1-yr change</span><span class="value-number negative">+£4.50</span></div>
@@ -550,13 +647,13 @@
                         <div class="y-axis"><span>£200</span><span>£150</span><span>£100</span></div>
                         <div class="chart-svg-wrapper">
                             <svg class="sparkline-svg" viewBox="0 0 100 30" preserveAspectRatio="none">
-                                <path class="sparkline-main" d="M 0,28 Q 25,24 50,16 T 75,10" />
-                                <path class="sparkline-tip negative" d="M 75,10 L 100,5" />
+                                <path class="sparkline-main" d="M 0,28 Q 25,22 50,14 T 100,5" />
+                                <path class="sparkline-tip negative" d="M 50,14 Q 75,8 100,4" />
                             </svg>
                         </div>
                         <div class="x-axis"><span>2021</span><span>2026</span></div>
                     </div>
-                    <div class="card-footer"><span>Frequency: Monthly</span><span>Source: Family Spending (OGL)</span></div>
+                    <div class="card-footer"><span>Frequency: Monthly</span><span>Source: Family Spending</span></div>
                 </div>
             </div>
         </div>
@@ -571,7 +668,7 @@
             </div>
             <div class="modal-body">
                 <div class="metric-card">
-                    <div class="card-header"><h3>Net UK Migration</h3><span class="info-badge">ONS</span></div>
+                    <div class="card-header"><h3>Net UK Migration</h3><span class="info-badge">ONS (OGL)</span></div>
                     <div class="values-grid">
                         <div class="value-box"><span class="value-label">Latest</span><span class="value-number">685,000</span></div>
                         <div class="value-box"><span class="value-label">1-yr change</span><span class="value-number positive">-52,000</span></div>
@@ -580,17 +677,17 @@
                         <div class="y-axis"><span>1m</span><span>500k</span><span>0</span></div>
                         <div class="chart-svg-wrapper">
                             <svg class="sparkline-svg" viewBox="0 0 100 30" preserveAspectRatio="none">
-                                <path class="sparkline-main" d="M 0,28 Q 20,5 50,2 T 75,15" />
-                                <path class="sparkline-tip positive" d="M 75,15 L 100,22" />
+                                <path class="sparkline-main" d="M 0,28 Q 25,5 50,2 T 100,20" />
+                                <path class="sparkline-tip positive" d="M 50,2 Q 75,10 100,18" />
                             </svg>
                         </div>
                         <div class="x-axis"><span>2021</span><span>2026</span></div>
                     </div>
-                    <div class="card-footer"><span>Frequency: Annual</span><span>Source: ONS (OGL)</span></div>
+                    <div class="card-footer"><span>Frequency: Annual</span><span>Source: ONS</span></div>
                 </div>
 
                 <div class="metric-card">
-                    <div class="card-header"><h3>Small Boat Arrivals</h3><span class="info-badge">Home Office</span></div>
+                    <div class="card-header"><h3>Small Boat Arrivals</h3><span class="info-badge">Home Office (OGL)</span></div>
                     <div class="values-grid">
                         <div class="value-box"><span class="value-label">Latest</span><span class="value-number">29,400</span></div>
                         <div class="value-box"><span class="value-label">1-yr change</span><span class="value-number negative">+1,200</span></div>
@@ -599,13 +696,13 @@
                         <div class="y-axis"><span>60k</span><span>30k</span><span>0</span></div>
                         <div class="chart-svg-wrapper">
                             <svg class="sparkline-svg" viewBox="0 0 100 30" preserveAspectRatio="none">
-                                <path class="sparkline-main" d="M 0,26 Q 25,18 50,5 T 75,12" />
-                                <path class="sparkline-tip negative" d="M 75,12 L 100,8" />
+                                <path class="sparkline-main" d="M 0,26 Q 25,18 50,5 T 100,8" />
+                                <path class="sparkline-tip negative" d="M 50,5 Q 75,10 100,8" />
                             </svg>
                         </div>
                         <div class="x-axis"><span>2021</span><span>2026</span></div>
                     </div>
-                    <div class="card-footer"><span>Frequency: YTD</span><span>Source: Home Office (OGL)</span></div>
+                    <div class="card-footer"><span>Frequency: YTD</span><span>Source: Home Office</span></div>
                 </div>
             </div>
         </div>
@@ -620,7 +717,7 @@
             </div>
             <div class="modal-body">
                 <div class="metric-card">
-                    <div class="card-header"><h3>Top Foreign Destination (Spain)</h3><span class="info-badge">ONS</span></div>
+                    <div class="card-header"><h3>Top Foreign Destination (Spain)</h3><span class="info-badge">ONS (OGL)</span></div>
                     <div class="values-grid">
                         <div class="value-box"><span class="value-label">Latest</span><span class="value-number">17.2M</span></div>
                         <div class="value-box"><span class="value-label">1-yr change</span><span class="value-number positive">+420,000</span></div>
@@ -629,13 +726,13 @@
                         <div class="y-axis"><span>20M</span><span>10M</span><span>0</span></div>
                         <div class="chart-svg-wrapper">
                             <svg class="sparkline-svg" viewBox="0 0 100 30" preserveAspectRatio="none">
-                                <path class="sparkline-main" d="M 0,28 Q 25,22 50,15 T 75,10" />
-                                <path class="sparkline-tip positive" d="M 75,10 L 100,5" />
+                                <path class="sparkline-main" d="M 0,28 Q 25,22 50,15 T 100,5" />
+                                <path class="sparkline-tip positive" d="M 50,15 Q 75,10 100,5" />
                             </svg>
                         </div>
                         <div class="x-axis"><span>2021</span><span>2026</span></div>
                     </div>
-                    <div class="card-footer"><span>Frequency: Annual</span><span>Source: Travel Trends (OGL)</span></div>
+                    <div class="card-footer"><span>Frequency: Annual</span><span>Source: Travel Trends</span></div>
                 </div>
 
                 <div class="metric-card">
@@ -648,13 +745,13 @@
                         <div class="y-axis"><span>8M</span><span>4M</span><span>0</span></div>
                         <div class="chart-svg-wrapper">
                             <svg class="sparkline-svg" viewBox="0 0 100 30" preserveAspectRatio="none">
-                                <path class="sparkline-main" d="M 0,25 Q 30,20 50,14 T 75,10" />
-                                <path class="sparkline-tip positive" d="M 75,10 L 100,6" />
+                                <path class="sparkline-main" d="M 0,25 Q 30,20 50,14 T 100,6" />
+                                <path class="sparkline-tip positive" d="M 50,14 Q 75,10 100,6" />
                             </svg>
                         </div>
                         <div class="x-axis"><span>2021</span><span>2026</span></div>
                     </div>
-                    <div class="card-footer"><span>Frequency: Annual</span><span>Source: ALVA / VisitBritain (OGL)</span></div>
+                    <div class="card-footer"><span>Frequency: Annual</span><span>Source: ALVA</span></div>
                 </div>
             </div>
         </div>
@@ -678,17 +775,17 @@
                         <div class="y-axis"><span>£300k</span><span>£150k</span><span>0</span></div>
                         <div class="chart-svg-wrapper">
                             <svg class="sparkline-svg" viewBox="0 0 100 30" preserveAspectRatio="none">
-                                <path class="sparkline-main" d="M 0,25 Q 30,20 50,15 T 75,12" />
-                                <path class="sparkline-tip positive" d="M 75,12 L 100,8" />
+                                <path class="sparkline-main" d="M 0,25 Q 30,20 50,15 T 100,8" />
+                                <path class="sparkline-tip positive" d="M 50,15 Q 75,10 100,8" />
                             </svg>
                         </div>
                         <div class="x-axis"><span>2021</span><span>2026</span></div>
                     </div>
-                    <div class="card-footer"><span>Frequency: Monthly</span><span>Source: HM Land Registry (OGL)</span></div>
+                    <div class="card-footer"><span>Frequency: Monthly</span><span>Source: Land Registry</span></div>
                 </div>
 
                 <div class="metric-card">
-                    <div class="card-header"><h3>Average Monthly Rent</h3><span class="info-badge">ONS</span></div>
+                    <div class="card-header"><h3>Average Monthly Rent</h3><span class="info-badge">ONS (OGL)</span></div>
                     <div class="values-grid">
                         <div class="value-box"><span class="value-label">Latest</span><span class="value-number">£1,459</span></div>
                         <div class="value-box"><span class="value-label">1-yr change</span><span class="value-number negative">+£56</span></div>
@@ -697,13 +794,13 @@
                         <div class="y-axis"><span>£1.8k</span><span>£1k</span><span>0</span></div>
                         <div class="chart-svg-wrapper">
                             <svg class="sparkline-svg" viewBox="0 0 100 30" preserveAspectRatio="none">
-                                <path class="sparkline-main" d="M 0,28 Q 30,22 50,18 T 75,10" />
-                                <path class="sparkline-tip negative" d="M 75,10 L 100,4" />
+                                <path class="sparkline-main" d="M 0,28 Q 30,22 50,18 T 100,4" />
+                                <path class="sparkline-tip negative" d="M 50,18 Q 75,10 100,4" />
                             </svg>
                         </div>
                         <div class="x-axis"><span>2021</span><span>2026</span></div>
                     </div>
-                    <div class="card-footer"><span>Frequency: Monthly</span><span>Source: ONS Rental Index (OGL)</span></div>
+                    <div class="card-footer"><span>Frequency: Monthly</span><span>Source: ONS Index</span></div>
                 </div>
             </div>
         </div>
@@ -718,7 +815,7 @@
             </div>
             <div class="modal-body">
                 <div class="metric-card">
-                    <div class="card-header"><h3>NHS Waiting List (England)</h3><span class="info-badge">NHS England</span></div>
+                    <div class="card-header"><h3>NHS Waiting List (England)</h3><span class="info-badge">NHS England (OGL)</span></div>
                     <div class="values-grid">
                         <div class="value-box"><span class="value-label">Latest</span><span class="value-number">7.33M</span></div>
                         <div class="value-box"><span class="value-label">1-yr change</span><span class="value-number positive">-30,000</span></div>
@@ -727,13 +824,13 @@
                         <div class="y-axis"><span>8M</span><span>4M</span><span>0</span></div>
                         <div class="chart-svg-wrapper">
                             <svg class="sparkline-svg" viewBox="0 0 100 30" preserveAspectRatio="none">
-                                <path class="sparkline-main" d="M 0,5 Q 30,2 50,8 T 75,18" />
-                                <path class="sparkline-tip positive" d="M 75,18 L 100,22" />
+                                <path class="sparkline-main" d="M 0,5 Q 30,2 50,8 T 100,22" />
+                                <path class="sparkline-tip positive" d="M 50,8 Q 75,15 100,22" />
                             </svg>
                         </div>
                         <div class="x-axis"><span>2021</span><span>2026</span></div>
                     </div>
-                    <div class="card-footer"><span>Frequency: Monthly</span><span>Source: NHS England (OGL)</span></div>
+                    <div class="card-footer"><span>Frequency: Monthly</span><span>Source: NHS England</span></div>
                 </div>
             </div>
         </div>
@@ -757,8 +854,19 @@
         });
 
         function syncTerminal() {
-            const now = new Date();
-            document.getElementById('terminal-status').textContent = `EDITION UPDATED // ${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+            const btn = document.getElementById('sync-btn');
+            btn.classList.add('spinning');
+
+            setTimeout(() => {
+                const now = new Date();
+                document.getElementById('terminal-status').textContent = `SYNCED // ${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`;
+                
+                // Slight simulated variation
+                const randomCpi = (3.40 + Math.random() * 0.2).toFixed(2);
+                document.getElementById('val-cpi').textContent = randomCpi + '%';
+
+                btn.classList.remove('spinning');
+            }, 600);
         }
     </script>
 </body>
